@@ -70,21 +70,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fiyat Girişi</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-<div class="container py-4">
-  <h1 class="h4 mb-3"><?= htmlspecialchars($quote['title']) ?> - Düzenleme</h1>
 
+  <style>
+    body { background: linear-gradient(160deg, #eef4ff, #f8fbff); min-height: 100vh; }
+    .page-shell { max-width: 1280px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    .header-box { background: linear-gradient(120deg, #0d6efd, #4f8dff); color: #fff; border-radius: 1rem; box-shadow: 0 14px 30px rgba(13,110,253,.25); }
+    .edit-card { border: 0; border-radius: 1rem; box-shadow: 0 12px 28px rgba(17,24,39,.10); }
+    .table tbody tr:hover { background: #f4f8ff; }
+  </style>
+
+</head>
+<body>
+<div class="page-shell">
+  <div class="header-box p-4 mb-4">
+    <h1 class="h4 mb-1"><?= htmlspecialchars($quote['title']) ?> - Düzenleme</h1>
+    <p class="mb-0 opacity-75">Tedarikçi, ürün satırı ve birim alanlarını bu ekrandan genişletebilirsiniz.</p>
+  </div>
+
+  <div class="card edit-card"><div class="card-body p-4">
   <form method="post" id="editForm">
     <input type="hidden" name="id" value="<?= htmlspecialchars($quote['id']) ?>">
 
     <div class="d-flex gap-2 mb-3">
-      <button type="button" id="addVendorBtn" class="btn btn-outline-secondary btn-sm">+ Tedarikçi Ekle</button>
-      <button type="button" id="addProductBtn" class="btn btn-outline-secondary btn-sm">+ Ürün Satırı Ekle</button>
+      <button type="button" id="addVendorBtn" class="btn btn-outline-primary btn-sm fw-semibold">+ Tedarikçi Ekle</button>
+      <button type="button" id="addProductBtn" class="btn btn-outline-primary btn-sm fw-semibold">+ Ürün Satırı Ekle</button>
     </div>
 
     <div class="table-responsive">
-      <table class="table table-bordered table-sm bg-white" id="editTable">
+      <table class="table table-bordered table-hover table-sm align-middle mb-0" id="editTable">
         <thead class="table-light">
         <tr>
           <th style="min-width: 220px">Ürün</th>
@@ -116,6 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <button class="btn btn-primary" type="submit">Kaydet ve Teklifi Gör</button>
   </form>
+  </div></div>
 </div>
 
 <script>
