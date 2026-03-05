@@ -2,6 +2,23 @@
 
 declare(strict_types=1);
 
+function simplePdfEncode(string $text): string
+{
+    $map = [
+        'Ğ' => "\xD0",
+        'ğ' => "\xF0",
+        'İ' => "\xDD",
+        'ı' => "\xFD",
+        'Ş' => "\xDE",
+        'ş' => "\xFE",
+    ];
+
+    $text = strtr($text, $map);
+    $converted = @iconv('UTF-8', 'Windows-1254//TRANSLIT', $text);
+
+    return $converted === false ? $text : $converted;
+}
+
 function simplePdfEscape(string $text): string
 {
     return str_replace(['\\', '(', ')'], ['\\\\', '\\(', '\\)'], $text);
@@ -13,7 +30,7 @@ function renderSimplePdf(array $lines): string
     $first = true;
 
     foreach ($lines as $line) {
-        $escaped = simplePdfEscape($line);
+        $escaped = simplePdfEscape(simplePdfEncode($line));
         if ($first) {
             $content .= "({$escaped}) Tj\n";
             $first = false;
@@ -28,7 +45,7 @@ function renderSimplePdf(array $lines): string
     $objects[] = "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj";
     $objects[] = "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj";
     $objects[] = "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj";
-    $objects[] = "4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj";
+    $objects[] = "4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding << /Type /Encoding /BaseEncoding /WinAnsiEncoding /Differences [208 /Gbreve 222 /Scedilla 221 /Idotaccent 240 /gbreve 254 /scedilla 253 /dotlessi] >> >> endobj";
     $objects[] = "5 0 obj << /Length " . strlen($content) . " >> stream\n" . $content . "\nendstream endobj";
 
     $pdf = "%PDF-1.4\n";

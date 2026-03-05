@@ -109,7 +109,6 @@ addVendorBtn.addEventListener('click', () => vendorRow(''));
 addProductBtn.addEventListener('click', () => productRow({}));
 
 vendorRow('Tedarikçi 1');
-vendorRow('Tedarikçi 2');
 productRow({name: 'Örnek Ürün', qty: 1, unit: 'Adet'});
 
 quoteForm.addEventListener('submit', (e) => {

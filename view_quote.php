@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/src/storage.php';
 require_once __DIR__ . '/src/report.php';
+require_once __DIR__ . '/src/format.php';
 
 $id = (string)($_GET['id'] ?? '');
 $quote = findQuote($id);
@@ -53,14 +54,14 @@ $bestVendor = bestVendorIndex($totals);
       <?php foreach ($quote['products'] as $pIndex => $product): ?>
         <tr>
           <td><?= htmlspecialchars($product['name']) ?></td>
-          <td><?= number_format((float)$product['qty'], 2, ',', '.') . ' ' . htmlspecialchars($product['unit']) ?></td>
+          <td><?= formatQuantity((float)$product['qty']) . ' ' . htmlspecialchars($product['unit']) ?></td>
           <?php foreach ($quote['vendors'] as $vIndex => $_vendor):
               $unitPrice = (float)($quote['prices'][$vIndex][$pIndex] ?? 0);
               $lineTotal = ((float)$product['qty']) * $unitPrice;
               ?>
             <td>
-              <div>Birim: <?= number_format($unitPrice, 2, ',', '.') ?> ₺</div>
-              <small class="text-muted">Toplam: <?= number_format($lineTotal, 2, ',', '.') ?> ₺</small>
+              <div>Birim: <?= formatMoney($unitPrice) ?> ₺</div>
+              <small class="text-muted">Toplam: <?= formatMoney($lineTotal) ?> ₺</small>
             </td>
           <?php endforeach; ?>
         </tr>
@@ -71,7 +72,7 @@ $bestVendor = bestVendorIndex($totals);
         <th colspan="2">Genel Toplam</th>
         <?php foreach ($quote['vendors'] as $vIndex => $vendor): ?>
           <th class="<?= $bestVendor === $vIndex ? 'table-success' : '' ?>">
-            <?= number_format((float)($totals[$vIndex] ?? 0), 2, ',', '.') ?> ₺
+            <?= formatMoney((float)($totals[$vIndex] ?? 0)) ?> ₺
           </th>
         <?php endforeach; ?>
       </tr>

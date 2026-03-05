@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/src/storage.php';
 
+date_default_timezone_set('Europe/Istanbul');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php');
     exit;
@@ -22,9 +24,11 @@ if ($companyName === '' || $title === '' || !is_array($vendors) || !is_array($pr
 }
 
 $normalizedProducts = array_map(static function (array $product): array {
+    $qty = str_replace(',', '.', (string)($product['qty'] ?? '0'));
+
     return [
         'name' => trim((string)($product['name'] ?? '')),
-        'qty' => (float)($product['qty'] ?? 0),
+        'qty' => max(0, (float)$qty),
         'unit' => trim((string)($product['unit'] ?? 'Adet')),
     ];
 }, $products);

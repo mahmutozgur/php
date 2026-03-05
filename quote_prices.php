@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/src/storage.php';
+require_once __DIR__ . '/src/format.php';
 
 $id = (string)($_GET['id'] ?? $_POST['id'] ?? '');
 $quote = findQuote($id);
@@ -14,6 +15,14 @@ if ($quote === null) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    foreach ($quote['products'] as $pIndex => $product) {
+        $qtyKey = 'qty_' . $pIndex;
+        if (isset($_POST[$qtyKey])) {
+            $qty = (float)str_replace(',', '.', (string)$_POST[$qtyKey]);
+            $quote['products'][$pIndex]['qty'] = max(0, $qty);
+        }
+    }
+
     $prices = [];
     foreach ($quote['vendors'] as $vIndex => $vendor) {
         foreach ($quote['products'] as $pIndex => $product) {
@@ -57,7 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php foreach ($quote['products'] as $pIndex => $product): ?>
           <tr>
             <td><?= htmlspecialchars($product['name']) ?></td>
-            <td><?= number_format((float)$product['qty'], 2, ',', '.') . ' ' . htmlspecialchars($product['unit']) ?></td>
+            <td style="min-width: 160px">
+              <div class="input-group input-group-sm">
+                <input class="form-control" type="number" min="0" step="0.01"
+                       name="qty_<?= $pIndex ?>"
+                       value="<?= htmlspecialchars((string)($product['qty'] ?? 0)) ?>">
+                <span class="input-group-text"><?= htmlspecialchars((string)$product['unit']) ?></span>
+              </div>
+              <small class="text-muted">Mevcut: <?= formatQuantity((float)$product['qty']) ?></small>
+            </td>
             <?php foreach ($quote['vendors'] as $vIndex => $_vendor): ?>
               <td>
                 <input class="form-control form-control-sm" type="number" min="0" step="0.01"
